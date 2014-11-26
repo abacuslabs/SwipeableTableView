@@ -30,16 +30,22 @@
     NSString *identifier = NSStringFromClass([ABCSwipeableTableViewCell class]);
     ABCSwipeableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     
-    if (cell != nil) {
+    if (!cell) {
         cell = [[ABCSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                              reuseIdentifier:identifier];
     }
     
-    
+    cell.defaultColor = [UIColor darkGrayColor];
+    cell.leftTriggerColor = [UIColor redColor];
+    cell.rightTriggerColor = [UIColor purpleColor];
     cell.swipeableDirections = ABCSwipeableTableViewCellDirectionRight | ABCSwipeableTableViewCellDirectionLeft;
     cell.leftAttributedTitle =
     [[NSAttributedString alloc] initWithString:@"delete"
                                     attributes:nil];
+    cell.rightAttributedTitle =
+    [[NSAttributedString alloc] initWithString:@"right"
+                                    attributes:nil];
+
     cell.triggerHandler = ^(ABCSwipeableTableViewCellDirection dir) {
         self.swipedCells = [self.swipedCells setByAddingObject:@(indexPath.row)];
         [self.tableView beginUpdates];

@@ -22,7 +22,8 @@ UIGestureRecognizerDelegate
 
 static const CGFloat threshold = 0.25f;
 static const CGFloat labelInset = 10.f;
-static const CGFloat animationDuration = 0.3f;
+static const CGFloat layoutAnimationDuration = 0.2f;
+static const CGFloat alphaAnimationDuration = 0.3;
 
 CGFloat ABCSwipeableTableViewCellNoOffset = 0.f;
 CGFloat ABCSwipeableTableViewCellOffsetRight = 1.f;
@@ -53,8 +54,6 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     self.rightLabel = [[UILabel alloc] init];
     [v addSubview:self.rightLabel];
     
-    
-    v.backgroundColor = [UIColor redColor];
     self.backgroundView = v;
     
     
@@ -71,68 +70,141 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.contentView.frame = CGRectMake(self.offset * self.bounds.size.width,
-                                        0.f,
-                                        self.contentView.bounds.size.width,
-                                        self.contentView.bounds.size.height);
-
-    [self layoutLabels];
+    [self layoutSubviewsAnimated:NO
+               completionHandler:nil];
 }
 
 - (void)prepareForReuse {
     [super prepareForReuse];
     self.leftLabel.text = nil;
     self.rightLabel.text = nil;
-    [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset];
+    [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
+                          animated:NO
+                 completionHandler:nil];
     [self setNeedsLayout];
 }
 
-- (void)layoutLabels {
-    [self.leftLabel sizeToFit];
+- (void)layoutSubviewsAnimated:(BOOL)animated
+             completionHandler:(void(^)())completionHandler {
+    [self _layoutContentView:animated
+           completionHandler:completionHandler];
+    [self _updateBackgroundColor:animated];
+    [self layoutLabels:animated];
+}
+
+- (void)_layoutContentView:(BOOL)animated
+         completionHandler:(void(^)())completionHandler {
+    void(^layoutBlock)() = ^{
+        self.contentView.frame = CGRectMake(self.offset * self.bounds.size.width,
+                                            0.f,
+                                            self.contentView.bounds.size.width,
+                                            self.contentView.bounds.size.height);
+    };
     
-    CGFloat leftLeft = MAX(labelInset,
-                           self.contentView.frame.origin.x - self.leftLabel.bounds.size.width - labelInset);
+    if (animated) {
+        [UIView animateWithDuration:layoutAnimationDuration
+                         animations:layoutBlock
+                         completion:completionHandler == nil ? nil :
+         ^(BOOL finished) {
+             if (finished) {
+                 completionHandler();
+             }
+         }];
+    }
+    else {
+        layoutBlock();
+    }
+}
+
+- (void)_layoutLabel:(UILabel *)label
+            withSize:(CGSize)s
+                left:(CGFloat)left
+               alpha:(CGFloat)alpha
+            animated:(BOOL)animated {
     
-    self.leftLabel.frame = CGRectMake(leftLeft,
-                                      0.f,
-                                      self.leftLabel.bounds.size.width,
-                                      self.backgroundView.bounds.size.height);
+    void(^layoutBlock)() = ^{
+        label.frame = CGRectMake(left,
+                                          0.f,
+                                          s.width,
+                                          self.backgroundView.bounds.size.height);
+        
+    };
+    
+    void(^visibilityBlock)() = nil;
+    if (fabs(label.alpha - alpha) < 0.01) {
+        visibilityBlock = ^{
+            label.alpha = alpha;
+        };
+    }
+    
+    if (animated) {
+        [UIView animateWithDuration:layoutAnimationDuration
+                         animations:layoutBlock
+                         completion:visibilityBlock == nil ? nil : ^(BOOL finished) {
+                             if (finished) {
+                                 [UIView animateWithDuration:alphaAnimationDuration
+                                                  animations:visibilityBlock];
+                             }
+                         }];
+    }
+    else {
+        layoutBlock();
+        if (visibilityBlock) {
+            visibilityBlock();
+        }
+    }
+
+}
+
+- (void)_layoutLeftLabel:(BOOL)animated {
+    
+    CGSize s = [self.leftLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    
+    CGFloat left = MAX(labelInset,
+                           self.contentView.frame.origin.x - s.width - labelInset);
+    
+    CGFloat alpha = 1.f;
+    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width)
+        < 0.01) {
+        alpha = 0.f;
+    }
     
     self.leftLabel.hidden = self.contentView.frame.origin.x < -threshold;
-    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width)
-        < 0.01 &&
-        self.leftLabel.alpha != 0.f) {
-        [UIView animateWithDuration:animationDuration
-                         animations:^{
-                             self.leftLabel.alpha = 0.f;
-                         }];
-    }
-    else if (self.leftLabel.alpha != 1.f) {
-        self.leftLabel.alpha = 1.f;
-    }
     
-    [self.rightLabel sizeToFit];
+    [self _layoutLabel:self.leftLabel
+              withSize:s
+                  left:left
+                 alpha:alpha
+              animated:animated];
+}
+
+- (void)_layoutRightLabel:(BOOL)animated {
     
-    CGFloat rightLeft = MIN(self.backgroundView.bounds.size.width - self.rightLabel.bounds.size.width - labelInset,
+    CGFloat left = MIN(self.backgroundView.bounds.size.width - self.rightLabel.bounds.size.width - labelInset,
                             self.contentView.frame.origin.x + self.contentView.frame.size.width + labelInset);
     
-    self.rightLabel.frame = CGRectMake(rightLeft,
-                                       0.f,
-                                       self.rightLabel.bounds.size.width,
-                                       self.backgroundView.bounds.size.height);
-    self.rightLabel.hidden = self.contentView.frame.origin.x > threshold;
-    self.rightLabel.alpha = 1.f;
+    CGSize s = [self.rightLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     
-    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetLeft * self.bounds.size.width) < 0.01 &&
-        self.rightLabel.alpha != 0.f) {
-        [UIView animateWithDuration:animationDuration
-                         animations:^{
-                             self.rightLabel.alpha = 0.f;
-                         }];
+    
+    CGFloat alpha = 1.f;
+    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetLeft * self.bounds.size.width) < 0.01) {
+        alpha = 0.f;
     }
-    else if (self.rightLabel.alpha != 1.f) {
-        self.rightLabel.alpha = 1.f;
-    }
+    
+    self.rightLabel.hidden = self.contentView.frame.origin.x > threshold;
+    
+    [self _layoutLabel:self.rightLabel
+              withSize:s
+                  left:left
+                 alpha:alpha
+              animated:animated];
+    
+    
+}
+
+- (void)layoutLabels:(BOOL)animated {
+    [self _layoutLeftLabel:animated];
+    [self _layoutRightLabel:animated];
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)pr {
@@ -151,6 +223,8 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     CGFloat offset =
     (translation / self.contentView.bounds.size.width);
     
+    
+    
     ABCSwipeableTableViewCellDirection dir = offset < ABCSwipeableTableViewCellNoOffset ? ABCSwipeableTableViewCellOffsetLeft : ABCSwipeableTableViewCellOffsetRight;
     
     if (!(self.swipeableDirections & dir)) {
@@ -158,25 +232,42 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     }
     
     if (pr.state == UIGestureRecognizerStateChanged) {
-        [self setSwipeOffsetPercentage:offset];
+        [self setSwipeOffsetPercentage:offset
+                              animated:NO
+                     completionHandler:nil];
     }
     else if (pr.state == UIGestureRecognizerStateCancelled) {
-        [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset];
+        [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
+                              animated:YES
+                     completionHandler:nil];
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
-            [self setSwipeOffsetPercentage:dir];
-            [self swipeTriggered:dir];
+            ABCSwipeableTableViewCell *weakSelf = self;
+            [self setSwipeOffsetPercentage:dir
+                                  animated:YES
+                         completionHandler:^{
+                             ABCSwipeableTableViewCell *strongSelf = weakSelf;
+                             [strongSelf swipeTriggered:dir];
+                         }];
         }
         else {
-            [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset];
+            [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
+                                  animated:YES
+                         completionHandler:nil];
         }
     }
 }
 
-- (void)setSwipeOffsetPercentage:(CGFloat)offset {
+- (void)setSwipeOffsetPercentage:(CGFloat)offset
+                        animated:(BOOL)animated
+               completionHandler:(void(^)())completionHandler {
+    NSParameterAssert(offset >= ABCSwipeableTableViewCellOffsetLeft);
+    NSParameterAssert(offset <= ABCSwipeableTableViewCellOffsetRight);
+    
     self.offset = offset;
-    [self setNeedsLayout];
+    [self layoutSubviewsAnimated:animated
+               completionHandler:completionHandler];
 }
 
 - (void)swipeTriggered:(ABCSwipeableTableViewCellDirection)direction {
@@ -201,6 +292,53 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 
 - (NSAttributedString *)rightAttributedTitle {
     return self.rightLabel.attributedText;
+}
+
+- (void)_updateBackgroundColor:(BOOL)animated {
+    UIColor *c = [self colorForOffset:self.offset];
+    if ([self.backgroundView.backgroundColor isEqual:c]) {
+        return;
+    }
+    
+    void(^colorBlock)() = ^{
+        self.backgroundView.backgroundColor = c;
+    };
+    if (animated) {
+        [UIView animateWithDuration:alphaAnimationDuration
+                         animations:^{
+                             colorBlock();
+                         }];
+    }
+    else {
+        colorBlock();
+    }
+}
+
+- (UIColor *)colorForOffset:(CGFloat)offset {
+    if (offset < ABCSwipeableTableViewCellNoOffset - threshold &&
+        self.rightTriggerColor) {
+        return self.rightTriggerColor;
+    }
+    else if (offset > ABCSwipeableTableViewCellNoOffset + threshold &&
+             self.leftTriggerColor) {
+        return self.leftTriggerColor;
+    }
+    return self.defaultColor;
+}
+
+- (void)setDefaultColor:(UIColor *)defaultColor {
+    _defaultColor = defaultColor;
+    [self setNeedsLayout];
+}
+
+- (void)setLeftTriggerColor:(UIColor *)leftTriggerColor {
+    _leftTriggerColor = leftTriggerColor;
+    [self setNeedsLayout];
+}
+
+- (void)setRightTriggerColor:(UIColor *)rightTriggerColor {
+    _rightTriggerColor = rightTriggerColor;
+    [self setNeedsLayout];
 }
 
 @end
