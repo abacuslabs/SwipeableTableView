@@ -19,7 +19,8 @@
 
 @implementation ViewController
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(__unused NSIndexPath *)indexPath {
     NSString *identifier = NSStringFromClass([ABCSwipeableTableViewCell class]);
     UITableViewCell *c = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (c == nil) {
@@ -30,16 +31,17 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
-heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath {
     return [ABCSwipeableTableViewCell heightForModel:nil
                                          inTableView:tableView];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView {
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(__unused UITableView *)tableView
+ numberOfRowsInSection:(__unused NSInteger)section {
     return 10;
 }
 
