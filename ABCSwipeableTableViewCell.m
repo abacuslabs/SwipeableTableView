@@ -15,7 +15,7 @@ UIGestureRecognizerDelegate
 
 @property (nonatomic) UILabel *leftLabel;
 @property (nonatomic) UILabel *rightLabel;
-
+@property (nonatomic) CGFloat offset;
 @end
 
 
@@ -48,15 +48,9 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     
     self.leftLabel = [[UILabel alloc] init];
-    self.leftLabel.backgroundColor = [UIColor magentaColor];
-    self.leftLabel.text = @"left label";
-    self.leftLabel.textAlignment = NSTextAlignmentCenter;
     [v addSubview:self.leftLabel];
     
     self.rightLabel = [[UILabel alloc] init];
-    self.rightLabel.backgroundColor = [UIColor magentaColor];
-    self.rightLabel.text = @"right label";
-    self.rightLabel.textAlignment = NSTextAlignmentCenter;
     [v addSubview:self.rightLabel];
     
     
@@ -77,13 +71,20 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    self.contentView.frame = CGRectMake(self.offset * self.bounds.size.width,
+                                        0.f,
+                                        self.contentView.bounds.size.width,
+                                        self.contentView.bounds.size.height);
+
     [self layoutLabels];
 }
 
 - (void)prepareForReuse {
     [super prepareForReuse];
-    
-    [self layoutLabels];
+    self.leftLabel.text = nil;
+    self.rightLabel.text = nil;
+    [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset];
+    [self setNeedsLayout];
 }
 
 - (void)layoutLabels {
@@ -98,8 +99,8 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
                                       self.backgroundView.bounds.size.height);
     
     self.leftLabel.hidden = self.contentView.frame.origin.x < -threshold;
-    
-    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width) < 0.01 &&
+    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width)
+        < 0.01 &&
         self.leftLabel.alpha != 0.f) {
         [UIView animateWithDuration:animationDuration
                          animations:^{
@@ -109,8 +110,6 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     else if (self.leftLabel.alpha != 1.f) {
         self.leftLabel.alpha = 1.f;
     }
-    
-    
     
     [self.rightLabel sizeToFit];
     
@@ -176,15 +175,32 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 }
 
 - (void)setSwipeOffsetPercentage:(CGFloat)offset {
-    self.contentView.frame = CGRectMake(offset * self.bounds.size.width,
-                                        0.f,
-                                        self.contentView.bounds.size.width,
-                                        self.contentView.bounds.size.height);
-    [self layoutLabels];
+    self.offset = offset;
+    [self setNeedsLayout];
 }
 
 - (void)swipeTriggered:(ABCSwipeableTableViewCellDirection)direction {
-    NSLog(@"swipeTriggered: %d", (int)direction);
+    if (self.triggerHandler) {
+        self.triggerHandler(direction);
+    }
+}
+
+- (void)setLeftAttributedTitle:(NSAttributedString *)leftAttributedTitle {
+    self.leftLabel.attributedText = leftAttributedTitle;
+    [self setNeedsLayout];
+}
+
+- (NSAttributedString *)leftAttributedTitle {
+    return self.leftLabel.attributedText;
+}
+
+- (void)setRightAttributedTitle:(NSAttributedString *)rightAttributedTitle {
+    self.rightLabel.attributedText = rightAttributedTitle;
+    [self setNeedsLayout];
+}
+
+- (NSAttributedString *)rightAttributedTitle {
+    return self.rightLabel.attributedText;
 }
 
 @end

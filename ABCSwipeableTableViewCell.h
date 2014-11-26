@@ -18,7 +18,16 @@ typedef NS_OPTIONS(NSInteger, ABCSwipeableTableViewCellDirection) {
 @interface ABCSwipeableTableViewCell : UITableViewCell
 @property (nonatomic) ABCSwipeableTableViewCellDirection swipeableDirections;
 
+@property (nonatomic) NSAttributedString *leftAttributedTitle;
+@property (nonatomic) NSAttributedString *rightAttributedTitle;
+@property (nonatomic) UIColor *leftTriggerColor;
+@property (nonatomic) UIColor *rightTriggerColor;
+@property (nonatomic, copy) void(^triggerHandler)(ABCSwipeableTableViewCellDirection);
+
+
 + (CGFloat)heightForModel:(id)model
               inTableView:(UITableView *)tableView;
+
+- (void)setSwipeOffsetPercentage:(CGFloat)offset;
 
 @end

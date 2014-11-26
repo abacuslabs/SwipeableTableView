@@ -12,27 +12,48 @@
 
 
 @interface ViewController ()
-
+@property (nonatomic) NSSet *swipedCells;
 @end
 
 
 
 @implementation ViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.swipedCells = [NSSet set];
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView
-         cellForRowAtIndexPath:(__unused NSIndexPath *)indexPath {
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     NSString *identifier = NSStringFromClass([ABCSwipeableTableViewCell class]);
-    UITableViewCell *c = [tableView dequeueReusableCellWithIdentifier:identifier];
-    if (c == nil) {
-        c = [[ABCSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+    ABCSwipeableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    
+    if (cell != nil) {
+        cell = [[ABCSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                              reuseIdentifier:identifier];
-        ((ABCSwipeableTableViewCell *)c).swipeableDirections = ABCSwipeableTableViewCellDirectionRight | ABCSwipeableTableViewCellDirectionLeft;
     }
-    return c;
+    
+    
+    cell.swipeableDirections = ABCSwipeableTableViewCellDirectionRight | ABCSwipeableTableViewCellDirectionLeft;
+    cell.leftAttributedTitle =
+    [[NSAttributedString alloc] initWithString:@"delete"
+                                    attributes:nil];
+    cell.triggerHandler = ^(ABCSwipeableTableViewCellDirection dir) {
+        self.swipedCells = [self.swipedCells setByAddingObject:@(indexPath.row)];
+        [self.tableView beginUpdates];
+        [self.tableView endUpdates];
+    };
+
+    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView
-heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath {
+heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([self.swipedCells containsObject:@(indexPath.row)]) {
+        return 0.f;
+    }
     return [ABCSwipeableTableViewCell heightForModel:nil
                                          inTableView:tableView];
 }
@@ -44,6 +65,12 @@ heightForRowAtIndexPath:(__unused NSIndexPath *)indexPath {
 - (NSInteger)tableView:(__unused UITableView *)tableView
  numberOfRowsInSection:(__unused NSInteger)section {
     return 10;
+}
+
+- (void)tableView:(UITableView *)tableView
+didSelectRowAtIndexPath:(__unused NSIndexPath *)indexPath {
+    self.swipedCells = [NSSet set];
+    [tableView reloadData];
 }
 
 @end
