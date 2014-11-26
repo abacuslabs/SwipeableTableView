@@ -12,6 +12,5 @@
 
 @property (nonatomic) UIWindow *window;
 
-
 @end
 
