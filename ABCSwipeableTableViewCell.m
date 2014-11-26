@@ -153,32 +153,22 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     (translation / self.contentView.bounds.size.width);
     
     if (pr.state == UIGestureRecognizerStateChanged) {
-        [self setSwipeOffsetPercentage:offset
-                              animated:NO
-                            fromSource:pr];
+        [self setSwipeOffsetPercentage:offset];
     }
     else if (pr.state == UIGestureRecognizerStateCancelled) {
-        [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
-                              animated:YES
-                            fromSource:pr];
+        [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset];
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
-            [self setSwipeOffsetPercentage:offset < ABCSwipeableTableViewCellNoOffset ? ABCSwipeableTableViewCellOffsetLeft : ABCSwipeableTableViewCellOffsetRight
-                                  animated:YES
-                                fromSource:pr];
+            [self setSwipeOffsetPercentage:offset < ABCSwipeableTableViewCellNoOffset ? ABCSwipeableTableViewCellOffsetLeft : ABCSwipeableTableViewCellOffsetRight];
         }
         else {
-            [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
-                                  animated:YES
-                                fromSource:pr];
+            [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset];
         }
     }
 }
 
-- (void)setSwipeOffsetPercentage:(CGFloat)offset
-                        animated:(BOOL)animated
-                      fromSource:(NSObject *)source {
+- (void)setSwipeOffsetPercentage:(CGFloat)offset {
     self.contentView.frame = CGRectMake(offset * self.bounds.size.width,
                                         0.f,
                                         self.contentView.bounds.size.width,
