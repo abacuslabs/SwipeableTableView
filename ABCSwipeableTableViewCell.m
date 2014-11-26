@@ -32,8 +32,8 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 
 @implementation ABCSwipeableTableViewCell
 
-+ (CGFloat)heightForModel:(id)model
-              inTableView:(UITableView *)tableView {
++ (CGFloat)heightForModel:(__unused id)model
+              inTableView:(__unused UITableView *)tableView {
     return 128.f;
 }
 
@@ -99,7 +99,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     
     self.leftLabel.hidden = self.contentView.frame.origin.x < -threshold;
     
-    if (self.contentView.frame.origin.x == ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width &&
+    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width) < 0.01 &&
         self.leftLabel.alpha != 0.f) {
         [UIView animateWithDuration:animationDuration
                          animations:^{
@@ -124,7 +124,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     self.rightLabel.hidden = self.contentView.frame.origin.x > threshold;
     self.rightLabel.alpha = 1.f;
     
-    if (self.contentView.frame.origin.x == ABCSwipeableTableViewCellOffsetLeft * self.bounds.size.width &&
+    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetLeft * self.bounds.size.width) < 0.01 &&
         self.rightLabel.alpha != 0.f) {
         [UIView animateWithDuration:animationDuration
                          animations:^{
