@@ -11,6 +11,7 @@
 		3D3BEFB41A263F89000885DD /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3BEFB21A263F89000885DD /* ViewController.m */; };
 		3D3BEFB61A263FA3000885DD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D3BEFB51A263FA3000885DD /* main.m */; };
 		3D3BEFBB1A263FE6000885DD /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3D3BEFBA1A263FE6000885DD /* Images.xcassets */; };
+		3DEA4FE41A26430C0030BFA6 /* ABCSwipeableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3DEA4FE31A26430C0030BFA6 /* ABCSwipeableTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,8 @@
 		3D3BEFB51A263FA3000885DD /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = SOURCE_ROOT; };
 		3D3BEFBA1A263FE6000885DD /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = SOURCE_ROOT; };
 		3D3BEFBC1A263FF8000885DD /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		3DEA4FE21A26430C0030BFA6 /* ABCSwipeableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCSwipeableTableViewCell.h; path = ../ABCSwipeableTableViewCell.h; sourceTree = "<group>"; };
+		3DEA4FE31A26430C0030BFA6 /* ABCSwipeableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCSwipeableTableViewCell.m; path = ../ABCSwipeableTableViewCell.m; sourceTree = "<group>"; };
 		3DFED7C41A263EEB005DE3BC /* ABCSwipeableTableViewCellDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ABCSwipeableTableViewCellDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -38,6 +41,8 @@
 		3DFED7BB1A263EEB005DE3BC = {
 			isa = PBXGroup;
 			children = (
+				3DEA4FE21A26430C0030BFA6 /* ABCSwipeableTableViewCell.h */,
+				3DEA4FE31A26430C0030BFA6 /* ABCSwipeableTableViewCell.m */,
 				3DFED7C61A263EEB005DE3BC /* ABCSwipeableTableViewCellDemo */,
 				3DFED7C51A263EEB005DE3BC /* Products */,
 			);
@@ -136,6 +141,7 @@
 				3D3BEFB41A263F89000885DD /* ViewController.m in Sources */,
 				3D3BEFB61A263FA3000885DD /* main.m in Sources */,
 				3D3BEFB31A263F89000885DD /* AppDelegate.m in Sources */,
+				3DEA4FE41A26430C0030BFA6 /* ABCSwipeableTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
