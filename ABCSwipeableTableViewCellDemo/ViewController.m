@@ -26,6 +26,7 @@
     if (c == nil) {
         c = [[ABCSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                              reuseIdentifier:identifier];
+        ((ABCSwipeableTableViewCell *)c).swipeableDirections = ABCSwipeableTableViewCellDirectionRight | ABCSwipeableTableViewCellDirectionLeft;
     }
     return c;
 }

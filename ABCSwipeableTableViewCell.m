@@ -152,6 +152,12 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     CGFloat offset =
     (translation / self.contentView.bounds.size.width);
     
+    ABCSwipeableTableViewCellDirection dir = offset < ABCSwipeableTableViewCellNoOffset ? ABCSwipeableTableViewCellOffsetLeft : ABCSwipeableTableViewCellOffsetRight;
+    
+    if (!(self.swipeableDirections & dir)) {
+        offset = ABCSwipeableTableViewCellNoOffset;
+    }
+    
     if (pr.state == UIGestureRecognizerStateChanged) {
         [self setSwipeOffsetPercentage:offset];
     }
@@ -160,7 +166,8 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
-            [self setSwipeOffsetPercentage:offset < ABCSwipeableTableViewCellNoOffset ? ABCSwipeableTableViewCellOffsetLeft : ABCSwipeableTableViewCellOffsetRight];
+            [self setSwipeOffsetPercentage:dir];
+            [self swipeTriggered:dir];
         }
         else {
             [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset];
@@ -174,6 +181,10 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
                                         self.contentView.bounds.size.width,
                                         self.contentView.bounds.size.height);
     [self layoutLabels];
+}
+
+- (void)swipeTriggered:(ABCSwipeableTableViewCellDirection)direction {
+    NSLog(@"swipeTriggered: %d", (int)direction);
 }
 
 @end

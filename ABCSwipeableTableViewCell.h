@@ -7,8 +7,16 @@
  */
 
 
+typedef NS_OPTIONS(NSInteger, ABCSwipeableTableViewCellDirection) {
+    ABCSwipeableTableViewCellDirectionNone = 0,
+    ABCSwipeableTableViewCellDirectionLeft,
+    ABCSwipeableTableViewCellDirectionRight
+};
+
+
 
 @interface ABCSwipeableTableViewCell : UITableViewCell
+@property (nonatomic) ABCSwipeableTableViewCellDirection swipeableDirections;
 
 + (CGFloat)heightForModel:(id)model
               inTableView:(UITableView *)tableView;
