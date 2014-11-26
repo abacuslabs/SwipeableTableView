@@ -32,6 +32,11 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 
 @implementation ABCSwipeableTableViewCell
 
++ (CGFloat)heightForModel:(id)model
+              inTableView:(UITableView *)tableView {
+    return 128.f;
+}
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier {
     

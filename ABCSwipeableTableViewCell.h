@@ -10,4 +10,7 @@
 
 @interface ABCSwipeableTableViewCell : UITableViewCell
 
++ (CGFloat)heightForModel:(id)model
+              inTableView:(UITableView *)tableView;
+
 @end

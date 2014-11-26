@@ -29,6 +29,12 @@
     return c;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView
+heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return [ABCSwipeableTableViewCell heightForModel:nil
+                                         inTableView:tableView];
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
