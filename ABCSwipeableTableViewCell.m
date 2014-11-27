@@ -12,18 +12,16 @@
 <
 UIGestureRecognizerDelegate
 >
-
-@property (nonatomic) UILabel *leftLabel;
-@property (nonatomic) UILabel *rightLabel;
 @property (nonatomic) CGFloat offset;
 @end
 
 
 
 static const CGFloat threshold = 0.25f;
-static const CGFloat labelInset = 10.f;
 static const CGFloat layoutAnimationDuration = 0.2f;
 static const CGFloat alphaAnimationDuration = 0.3;
+
+
 
 CGFloat ABCSwipeableTableViewCellNoOffset = 0.f;
 CGFloat ABCSwipeableTableViewCellOffsetRight = 1.f;
@@ -44,17 +42,11 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     self = [super initWithStyle:style
                 reuseIdentifier:reuseIdentifier];
     
+    if (!self) {
+        return nil;
+    }
     
-    
-    UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    self.leftLabel = [[UILabel alloc] init];
-    [v addSubview:self.leftLabel];
-    
-    self.rightLabel = [[UILabel alloc] init];
-    [v addSubview:self.rightLabel];
-    
-    self.backgroundView = v;
+    self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
     
     
     UIPanGestureRecognizer *pr =
@@ -76,12 +68,42 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 
 - (void)prepareForReuse {
     [super prepareForReuse];
-    self.leftLabel.text = nil;
-    self.rightLabel.text = nil;
+    
+    if ([self.leftTriggerView respondsToSelector:@selector(prepareForReuse)]) {
+        [self.leftTriggerView prepareForReuse];
+    }
+    
+    if ([self.rightTriggerView respondsToSelector:@selector(prepareForReuse)]) {
+        [self.rightTriggerView prepareForReuse];
+    }
+    
     [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
                           animated:NO
                  completionHandler:nil];
+    
     [self setNeedsLayout];
+}
+
+- (void)setLeftTriggerViewInsets:(UIEdgeInsets)leftTriggerViewInsets {
+    _leftTriggerViewInsets = leftTriggerViewInsets;
+    [self setNeedsLayout];
+}
+
+- (void)setRightTriggerViewInsets:(UIEdgeInsets)rightTriggerViewInsets {
+    _rightTriggerViewInsets = rightTriggerViewInsets;
+    [self setNeedsLayout];
+}
+
+- (void)setLeftTriggerView:(UIView<ABCSwipeableTableViewCellReusableView> *)leftTriggerView {
+    [self.leftTriggerView removeFromSuperview];
+    [self.backgroundView addSubview:leftTriggerView];
+    _leftTriggerView = leftTriggerView;
+}
+
+- (void)setRightTriggerView:(UIView<ABCSwipeableTableViewCellReusableView> *)rightTriggerView {
+    [self.rightTriggerView removeFromSuperview];
+    [self.backgroundView addSubview:rightTriggerView];
+    _rightTriggerView = rightTriggerView;
 }
 
 - (void)layoutSubviewsAnimated:(BOOL)animated
@@ -89,7 +111,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     [self _layoutContentView:animated
            completionHandler:completionHandler];
     [self _updateBackgroundColor:animated];
-    [self layoutLabels:animated];
+    [self layoutTriggerViews:animated];
 }
 
 - (void)_layoutContentView:(BOOL)animated
@@ -116,24 +138,25 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     }
 }
 
-- (void)_layoutLabel:(UILabel *)label
-            withSize:(CGSize)s
-                left:(CGFloat)left
-               alpha:(CGFloat)alpha
-            animated:(BOOL)animated {
+- (void)_layoutTriggerView:(UIView *)view
+                  withSize:(CGSize)s
+                    insets:(UIEdgeInsets)insets
+                      left:(CGFloat)left
+                     alpha:(CGFloat)alpha
+                  animated:(BOOL)animated {
     
     void(^layoutBlock)() = ^{
-        label.frame = CGRectMake(left,
-                                          0.f,
-                                          s.width,
-                                          self.backgroundView.bounds.size.height);
+        view.frame = CGRectMake(left,
+                                (self.backgroundView.bounds.size.height / 2.f) - (s.height / 2.f) + insets.top + insets.bottom,
+                                s.width,
+                                s.height);
         
     };
     
     void(^visibilityBlock)() = nil;
-    if (fabs(label.alpha - alpha) < 0.01) {
+    if (fabs(view.alpha - alpha) < 0.01) {
         visibilityBlock = ^{
-            label.alpha = alpha;
+            view.alpha = alpha;
         };
     }
     
@@ -153,15 +176,15 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
             visibilityBlock();
         }
     }
-
+    
 }
 
-- (void)_layoutLeftLabel:(BOOL)animated {
+- (void)_layoutLeftTriggerView:(BOOL)animated {
     
-    CGSize s = [self.leftLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    CGSize s = [self.leftTriggerView sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     
-    CGFloat left = MAX(labelInset,
-                           self.contentView.frame.origin.x - s.width - labelInset);
+    CGFloat left = MAX(self.leftTriggerViewInsets.left,
+                       self.contentView.frame.origin.x - s.width - self.leftTriggerViewInsets.right);
     
     CGFloat alpha = 1.f;
     if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width)
@@ -169,21 +192,21 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
         alpha = 0.f;
     }
     
-    self.leftLabel.hidden = self.contentView.frame.origin.x < -threshold;
+    self.leftTriggerView.hidden = self.contentView.frame.origin.x < -threshold;
     
-    [self _layoutLabel:self.leftLabel
-              withSize:s
-                  left:left
-                 alpha:alpha
-              animated:animated];
+    [self _layoutTriggerView:self.leftTriggerView
+                    withSize:s
+                      insets:self.leftTriggerViewInsets
+                        left:left
+                       alpha:alpha
+                    animated:animated];
 }
 
-- (void)_layoutRightLabel:(BOOL)animated {
+- (void)_layoutRightTriggerView:(BOOL)animated {
+    CGSize s = [self.rightTriggerView sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     
-    CGFloat left = MIN(self.backgroundView.bounds.size.width - self.rightLabel.bounds.size.width - labelInset,
-                            self.contentView.frame.origin.x + self.contentView.frame.size.width + labelInset);
-    
-    CGSize s = [self.rightLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    CGFloat left = MIN(self.backgroundView.bounds.size.width - s.width - self.rightTriggerViewInsets.right,
+                       self.contentView.frame.origin.x + self.contentView.frame.size.width + self.rightTriggerViewInsets.left);
     
     
     CGFloat alpha = 1.f;
@@ -191,20 +214,19 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
         alpha = 0.f;
     }
     
-    self.rightLabel.hidden = self.contentView.frame.origin.x > threshold;
+    self.rightTriggerView.hidden = self.contentView.frame.origin.x > threshold;
     
-    [self _layoutLabel:self.rightLabel
-              withSize:s
-                  left:left
-                 alpha:alpha
-              animated:animated];
-    
-    
+    [self _layoutTriggerView:self.rightTriggerView
+                    withSize:s
+                      insets:self.rightTriggerViewInsets
+                        left:left
+                       alpha:alpha
+                    animated:animated];
 }
 
-- (void)layoutLabels:(BOOL)animated {
-    [self _layoutLeftLabel:animated];
-    [self _layoutRightLabel:animated];
+- (void)layoutTriggerViews:(BOOL)animated {
+    [self _layoutLeftTriggerView:animated];
+    [self _layoutRightTriggerView:animated];
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)pr {
@@ -274,24 +296,6 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     if (self.triggerHandler) {
         self.triggerHandler(direction);
     }
-}
-
-- (void)setLeftAttributedTitle:(NSAttributedString *)leftAttributedTitle {
-    self.leftLabel.attributedText = leftAttributedTitle;
-    [self setNeedsLayout];
-}
-
-- (NSAttributedString *)leftAttributedTitle {
-    return self.leftLabel.attributedText;
-}
-
-- (void)setRightAttributedTitle:(NSAttributedString *)rightAttributedTitle {
-    self.rightLabel.attributedText = rightAttributedTitle;
-    [self setNeedsLayout];
-}
-
-- (NSAttributedString *)rightAttributedTitle {
-    return self.rightLabel.attributedText;
 }
 
 - (void)_updateBackgroundColor:(BOOL)animated {

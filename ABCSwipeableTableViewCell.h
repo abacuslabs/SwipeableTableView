@@ -15,13 +15,26 @@ typedef NS_OPTIONS(NSInteger, ABCSwipeableTableViewCellDirection) {
 
 
 
+@protocol ABCSwipeableTableViewCellReusableView <NSObject>
+
+@optional
+- (void)prepareForReuse;
+
+@end
+
+
+
 @interface ABCSwipeableTableViewCell : UITableViewCell
 @property (nonatomic) ABCSwipeableTableViewCellDirection swipeableDirections;
 
-@property (nonatomic) NSAttributedString *leftAttributedTitle;
-@property (nonatomic) NSAttributedString *rightAttributedTitle;
+@property (nonatomic) UIView<ABCSwipeableTableViewCellReusableView> *leftTriggerView;
+@property (nonatomic) UIEdgeInsets leftTriggerViewInsets;
 @property (nonatomic) UIColor *leftTriggerColor;
+
+@property (nonatomic) UIView<ABCSwipeableTableViewCellReusableView> *rightTriggerView;
+@property (nonatomic) UIEdgeInsets rightTriggerViewInsets;
 @property (nonatomic) UIColor *rightTriggerColor;
+
 @property (nonatomic) UIColor *defaultColor;
 
 @property (nonatomic, copy) void(^triggerHandler)(ABCSwipeableTableViewCellDirection);

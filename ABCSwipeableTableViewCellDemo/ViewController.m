@@ -39,13 +39,16 @@
     cell.leftTriggerColor = [UIColor redColor];
     cell.rightTriggerColor = [UIColor purpleColor];
     cell.swipeableDirections = ABCSwipeableTableViewCellDirectionRight | ABCSwipeableTableViewCellDirectionLeft;
-    cell.leftAttributedTitle =
-    [[NSAttributedString alloc] initWithString:@"delete"
-                                    attributes:nil];
-    cell.rightAttributedTitle =
-    [[NSAttributedString alloc] initWithString:@"right"
-                                    attributes:nil];
-
+    
+    UILabel *l = [[UILabel alloc] init];
+    l.text = @"left";
+    cell.leftTriggerView = l;
+    
+    UILabel *r = [[UILabel alloc] init];
+    r.text = @"right";
+    cell.rightTriggerView = r;
+    cell.leftTriggerViewInsets = UIEdgeInsetsMake(36.f, 30.f, 0.f, 0.f);
+    
     cell.triggerHandler = ^(ABCSwipeableTableViewCellDirection dir) {
         self.swipedCells = [self.swipedCells setByAddingObject:@(indexPath.row)];
         [self.tableView beginUpdates];
