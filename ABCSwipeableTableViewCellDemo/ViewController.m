@@ -32,7 +32,7 @@
     
     if (!cell) {
         cell = [[ABCSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                             reuseIdentifier:identifier];
+                                                reuseIdentifier:identifier];
     }
     
     cell.defaultColor = [UIColor darkGrayColor];
@@ -48,14 +48,49 @@
     r.text = @"right";
     cell.rightTriggerView = r;
     cell.leftTriggerViewInsets = UIEdgeInsetsMake(36.f, 30.f, 0.f, 0.f);
+    cell.rightTriggerViewInsets = UIEdgeInsetsMake(0.f, 30.f, 0.f, 30.f);
+    
+    
     
     cell.triggerHandler = ^(ABCSwipeableTableViewCellDirection dir) {
         self.swipedCells = [self.swipedCells setByAddingObject:@(indexPath.row)];
         [self.tableView beginUpdates];
         [self.tableView endUpdates];
     };
-
+    
+    
+    int rand = arc4random() % 100;
+    
+    if (rand < 20) {
+        __weak ViewController *weakSelf = self;
+        cell.onSwipeHandler = ^(UITableViewCell *cell, CGFloat f, BOOL animated) {
+            ViewController *strongSelf = weakSelf;
+            [strongSelf handleCellSwipe:cell
+                                 offset:f
+                               animated:animated];
+        };
+    }
+    
     return cell;
+}
+
+- (void)handleCellSwipe:(UITableViewCell *)cell
+                 offset:(CGFloat)offset
+               animated:(BOOL)animated {
+    NSIndexPath *ip =
+    [self.tableView indexPathForCell:cell];
+    
+    for (UITableViewCell *c in self.tableView.visibleCells) {
+        if (c == cell) {
+            continue;
+        }
+        if ([self.tableView indexPathForCell:c].section == ip.section) {
+            [(ABCSwipeableTableViewCell *)c setSwipeOffsetPercentage:offset
+                                                            animated:animated
+                                                   completionHandler:nil];
+        }
+    }
+    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView

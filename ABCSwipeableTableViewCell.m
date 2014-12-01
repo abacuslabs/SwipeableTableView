@@ -45,7 +45,8 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     if (!self) {
         return nil;
     }
-    
+
+    self.clipsToBounds = YES;
     self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
     
     
@@ -68,6 +69,14 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 
 - (void)prepareForReuse {
     [super prepareForReuse];
+    
+    self.triggerHandler = nil;
+    self.onSwipeHandler = nil;
+    self.leftTriggerViewInsets = UIEdgeInsetsZero;
+    self.rightTriggerViewInsets = UIEdgeInsetsZero;
+    self.leftTriggerColor = nil;
+    self.rightTriggerColor = nil;
+    self.defaultColor = nil;
     
     if ([self.leftTriggerView respondsToSelector:@selector(prepareForReuse)]) {
         [self.leftTriggerView prepareForReuse];
@@ -244,7 +253,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     CGFloat translation = [pr translationInView:self.contentView].x;
     CGFloat offset =
     (translation / self.contentView.bounds.size.width);
-    
+    BOOL animated = YES;
     
     
     ABCSwipeableTableViewCellDirection dir = offset < ABCSwipeableTableViewCellNoOffset ? ABCSwipeableTableViewCellOffsetLeft : ABCSwipeableTableViewCellOffsetRight;
@@ -254,30 +263,36 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     }
     
     if (pr.state == UIGestureRecognizerStateChanged) {
+        animated = NO;
         [self setSwipeOffsetPercentage:offset
-                              animated:NO
+                              animated:animated
                      completionHandler:nil];
     }
     else if (pr.state == UIGestureRecognizerStateCancelled) {
-        [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
-                              animated:YES
+        offset = ABCSwipeableTableViewCellNoOffset;
+        [self setSwipeOffsetPercentage:offset
+                              animated:animated
                      completionHandler:nil];
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
             ABCSwipeableTableViewCell *weakSelf = self;
             [self setSwipeOffsetPercentage:dir
-                                  animated:YES
+                                  animated:animated
                          completionHandler:^{
                              ABCSwipeableTableViewCell *strongSelf = weakSelf;
                              [strongSelf swipeTriggered:dir];
                          }];
         }
         else {
-            [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
-                                  animated:YES
+            offset = ABCSwipeableTableViewCellNoOffset;
+            [self setSwipeOffsetPercentage:offset
+                                  animated:animated
                          completionHandler:nil];
         }
+    }
+    if (self.onSwipeHandler) {
+        self.onSwipeHandler(self, offset, animated);
     }
 }
 
@@ -288,6 +303,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     NSParameterAssert(offset <= ABCSwipeableTableViewCellOffsetRight);
     
     self.offset = offset;
+    
     [self layoutSubviewsAnimated:animated
                completionHandler:completionHandler];
 }
