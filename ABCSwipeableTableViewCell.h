@@ -24,6 +24,12 @@ typedef NS_OPTIONS(NSInteger, ABCSwipeableTableViewCellDirection) {
 
 
 
+extern CGFloat ABCSwipeableTableViewCellNoOffset;
+extern CGFloat ABCSwipeableTableViewCellOffsetRight;
+extern CGFloat ABCSwipeableTableViewCellOffsetLeft;
+
+
+
 @interface ABCSwipeableTableViewCell : UITableViewCell
 @property (nonatomic) ABCSwipeableTableViewCellDirection swipeableDirections;
 
