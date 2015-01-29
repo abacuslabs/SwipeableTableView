@@ -2,17 +2,16 @@
 
 
 
-/**
- Created by Jan Sichermann on 11/26/14. Copyright (c) 2014 Abacus. All rights reserved.
- */
-
-
-
 @interface AbacusSwipeableTableViewCell ()
 <
 UIGestureRecognizerDelegate
 >
 @property (nonatomic) CGFloat offset;
+@property (nonatomic) NSMutableSet *childIndexPaths;
+
+// unhappy about this
+@property (nonatomic, weak) UITableView *enclosingTableView;
+
 @end
 
 
@@ -40,7 +39,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     if (!self) {
         return nil;
     }
-
+    
     self.clipsToBounds = YES;
     self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -64,6 +63,9 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
 
 - (void)prepareForReuse {
     [super prepareForReuse];
+    
+    self.enclosingTableView = nil;
+    self.childIndexPaths = nil;
     
     self.triggerHandler = nil;
     self.onSwipeHandler = nil;
@@ -257,6 +259,56 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
         offset = AbacusSwipeableTableViewCellNoOffset;
     }
     
+    
+    void(^completionHandler)() = nil;
+    
+    if (pr.state == UIGestureRecognizerStateCancelled) {
+        offset = AbacusSwipeableTableViewCellNoOffset;
+    }
+    else if (pr.state == UIGestureRecognizerStateChanged) {
+        animated = NO;
+    }
+    else if (pr.state == UIGestureRecognizerStateEnded) {
+        if (offset > threshold || offset < -threshold) {
+            offset = dir == AbacusSwipeableTableViewCellDirectionLeft ? AbacusSwipeableTableViewCellOffsetLeft : AbacusSwipeableTableViewCellOffsetRight;
+            __weak AbacusSwipeableTableViewCell *weakSelf = self;
+            completionHandler = pr.state != UIGestureRecognizerStateEnded ? nil : ^{
+                AbacusSwipeableTableViewCell *strongSelf = weakSelf;
+                [strongSelf swipeTriggered:dir];
+            };
+        }
+        else {
+            offset = AbacusSwipeableTableViewCellNoOffset;
+        }
+    }
+    
+    [self setSwipeOffsetPercentage:offset
+                          animated:animated
+                 completionHandler:completionHandler];
+    
+    UITableView *enclosingTableView = self.enclosingTableView;
+    if (self.childIndexPaths.count > 0 && enclosingTableView) {
+        for (UITableViewCell *cell in [self.enclosingTableView visibleCells]) {
+            if (![cell isKindOfClass:[AbacusSwipeableTableViewCell class]]) {
+                continue;
+            }
+            
+            NSIndexPath *ip = [enclosingTableView indexPathForCell:cell];
+            if ([self.childIndexPaths containsObject:ip]) {
+                [(AbacusSwipeableTableViewCell *)cell setSwipeOffsetPercentage:offset
+                                                                      animated:animated
+                                                             completionHandler:nil];
+            }
+        }
+    }
+    
+    if (self.onSwipeHandler) {
+        self.onSwipeHandler(self, offset, animated);
+    }
+    return;
+    
+    
+    
     if (pr.state == UIGestureRecognizerStateChanged) {
         animated = NO;
         [self setSwipeOffsetPercentage:offset
@@ -271,7 +323,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
-            AbacusSwipeableTableViewCell *weakSelf = self;
+            __weak AbacusSwipeableTableViewCell *weakSelf = self;
             [self setSwipeOffsetPercentage:dir
                                   animated:animated
                          completionHandler:^{
@@ -354,6 +406,25 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
 - (void)setRightTriggerColor:(UIColor *)rightTriggerColor {
     _rightTriggerColor = rightTriggerColor;
     [self setNeedsLayout];
+}
+
+- (void)addChildSection:(NSInteger)section
+            inTableView:(UITableView *)tableView {
+    
+    if (!self.childIndexPaths) {
+        self.childIndexPaths = [NSMutableSet set];
+    }
+    
+    if (self.enclosingTableView != tableView) {
+        self.enclosingTableView = tableView;
+    }
+    
+    NSInteger numberOfRows = [tableView numberOfRowsInSection:section];
+    for (NSInteger i = 0; i < numberOfRows; i++) {
+        [self.childIndexPaths addObject:
+         [NSIndexPath indexPathForRow:i
+                            inSection:section]];
+    }
 }
 
 @end

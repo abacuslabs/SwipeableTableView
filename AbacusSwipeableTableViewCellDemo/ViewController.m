@@ -4,7 +4,9 @@
 
 
 @interface ViewController ()
+
 @property (nonatomic) NSSet *swipedCells;
+
 @end
 
 
@@ -30,7 +32,7 @@
     cell.defaultColor = [UIColor darkGrayColor];
     cell.leftTriggerColor = [UIColor redColor];
     cell.rightTriggerColor = [UIColor purpleColor];
-    cell.swipeableDirections = ABCSwipeableTableViewCellDirectionRight | ABCSwipeableTableViewCellDirectionLeft;
+    cell.swipeableDirections = AbacusSwipeableTableViewCellDirectionRight | AbacusSwipeableTableViewCellDirectionLeft;
     
     UILabel *l = [[UILabel alloc] init];
     l.text = @"left";
@@ -48,39 +50,12 @@
         [self.tableView endUpdates];
     };
     
-    
-    int rand = arc4random() % 100;
-    
-    if (rand < 20) {
-        __weak ViewController *weakSelf = self;
-        cell.onSwipeHandler = ^(UITableViewCell *cell, CGFloat f, BOOL animated) {
-            ViewController *strongSelf = weakSelf;
-            [strongSelf handleCellSwipe:cell
-                                 offset:f
-                               animated:animated];
-        };
+    if (indexPath.row == 0) {
+        [cell addChildSection:0
+                  inTableView:self.tableView];
     }
     
     return cell;
-}
-
-- (void)handleCellSwipe:(UITableViewCell *)cell
-                 offset:(CGFloat)offset
-               animated:(BOOL)animated {
-    NSIndexPath *ip =
-    [self.tableView indexPathForCell:cell];
-    
-    for (UITableViewCell *c in self.tableView.visibleCells) {
-        if (c == cell) {
-            continue;
-        }
-        if ([self.tableView indexPathForCell:c].section == ip.section) {
-            [(AbacusSwipeableTableViewCell *)c setSwipeOffsetPercentage:offset
-                                                               animated:animated
-                                                      completionHandler:nil];
-        }
-    }
-    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView

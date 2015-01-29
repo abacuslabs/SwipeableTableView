@@ -8,9 +8,9 @@
 
 
 typedef NS_OPTIONS(NSInteger, AbacusSwipeableTableViewCellDirection) {
-    ABCSwipeableTableViewCellDirectionNone = 0,
-    ABCSwipeableTableViewCellDirectionLeft,
-    ABCSwipeableTableViewCellDirectionRight
+    AbacusSwipeableTableViewCellDirectionNone = 0,
+    AbacusSwipeableTableViewCellDirectionLeft,
+    AbacusSwipeableTableViewCellDirectionRight
 };
 
 
@@ -50,5 +50,8 @@ extern CGFloat AbacusSwipeableTableViewCellOffsetLeft;
 - (void)setSwipeOffsetPercentage:(CGFloat)offset
                         animated:(BOOL)animated
                completionHandler:(void(^)())completionHandler;
+
+- (void)addChildSection:(NSInteger)section
+            inTableView:(UITableView *)tableView;
 
 @end
