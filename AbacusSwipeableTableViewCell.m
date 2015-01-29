@@ -8,7 +8,7 @@
 
 
 
-@interface ABCSwipeableTableViewCell ()
+@interface AbacusSwipeableTableViewCell ()
 <
 UIGestureRecognizerDelegate
 >
@@ -23,13 +23,13 @@ static const CGFloat alphaAnimationDuration = 0.3;
 
 
 
-CGFloat ABCSwipeableTableViewCellNoOffset = 0.f;
-CGFloat ABCSwipeableTableViewCellOffsetRight = 1.f;
-CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
+CGFloat AbacusSwipeableTableViewCellNoOffset = 0.f;
+CGFloat AbacusSwipeableTableViewCellOffsetRight = 1.f;
+CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
 
 
 
-@implementation ABCSwipeableTableViewCell
+@implementation AbacusSwipeableTableViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString *)reuseIdentifier {
@@ -81,7 +81,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
         [self.rightTriggerView prepareForReuse];
     }
     
-    [self setSwipeOffsetPercentage:ABCSwipeableTableViewCellNoOffset
+    [self setSwipeOffsetPercentage:AbacusSwipeableTableViewCellNoOffset
                           animated:NO
                  completionHandler:nil];
     
@@ -98,13 +98,13 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     [self setNeedsLayout];
 }
 
-- (void)setLeftTriggerView:(UIView<ABCSwipeableTableViewCellReusableView> *)leftTriggerView {
+- (void)setLeftTriggerView:(UIView<AbacusSwipeableTableViewCellReusableView> *)leftTriggerView {
     [self.leftTriggerView removeFromSuperview];
     [self.backgroundView addSubview:leftTriggerView];
     _leftTriggerView = leftTriggerView;
 }
 
-- (void)setRightTriggerView:(UIView<ABCSwipeableTableViewCellReusableView> *)rightTriggerView {
+- (void)setRightTriggerView:(UIView<AbacusSwipeableTableViewCellReusableView> *)rightTriggerView {
     [self.rightTriggerView removeFromSuperview];
     [self.backgroundView addSubview:rightTriggerView];
     _rightTriggerView = rightTriggerView;
@@ -191,7 +191,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
                        self.contentView.frame.origin.x - s.width - self.leftTriggerViewInsets.right);
     
     CGFloat alpha = 1.f;
-    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetRight * self.bounds.size.width)
+    if (fabs(self.contentView.frame.origin.x - AbacusSwipeableTableViewCellOffsetRight * self.bounds.size.width)
         < 0.01) {
         alpha = 0.f;
     }
@@ -214,7 +214,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     
     
     CGFloat alpha = 1.f;
-    if (fabs(self.contentView.frame.origin.x - ABCSwipeableTableViewCellOffsetLeft * self.bounds.size.width) < 0.01) {
+    if (fabs(self.contentView.frame.origin.x - AbacusSwipeableTableViewCellOffsetLeft * self.bounds.size.width) < 0.01) {
         alpha = 0.f;
     }
     
@@ -251,10 +251,10 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
     BOOL animated = YES;
     
     
-    ABCSwipeableTableViewCellDirection dir = offset < ABCSwipeableTableViewCellNoOffset ? ABCSwipeableTableViewCellOffsetLeft : ABCSwipeableTableViewCellOffsetRight;
+    AbacusSwipeableTableViewCellDirection dir = offset < AbacusSwipeableTableViewCellNoOffset ? AbacusSwipeableTableViewCellOffsetLeft : AbacusSwipeableTableViewCellOffsetRight;
     
     if (!(self.swipeableDirections & dir)) {
-        offset = ABCSwipeableTableViewCellNoOffset;
+        offset = AbacusSwipeableTableViewCellNoOffset;
     }
     
     if (pr.state == UIGestureRecognizerStateChanged) {
@@ -264,23 +264,23 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
                      completionHandler:nil];
     }
     else if (pr.state == UIGestureRecognizerStateCancelled) {
-        offset = ABCSwipeableTableViewCellNoOffset;
+        offset = AbacusSwipeableTableViewCellNoOffset;
         [self setSwipeOffsetPercentage:offset
                               animated:animated
                      completionHandler:nil];
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
-            ABCSwipeableTableViewCell *weakSelf = self;
+            AbacusSwipeableTableViewCell *weakSelf = self;
             [self setSwipeOffsetPercentage:dir
                                   animated:animated
                          completionHandler:^{
-                             ABCSwipeableTableViewCell *strongSelf = weakSelf;
+                             AbacusSwipeableTableViewCell *strongSelf = weakSelf;
                              [strongSelf swipeTriggered:dir];
                          }];
         }
         else {
-            offset = ABCSwipeableTableViewCellNoOffset;
+            offset = AbacusSwipeableTableViewCellNoOffset;
             [self setSwipeOffsetPercentage:offset
                                   animated:animated
                          completionHandler:nil];
@@ -294,8 +294,8 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 - (void)setSwipeOffsetPercentage:(CGFloat)offset
                         animated:(BOOL)animated
                completionHandler:(void(^)())completionHandler {
-    NSParameterAssert(offset >= ABCSwipeableTableViewCellOffsetLeft);
-    NSParameterAssert(offset <= ABCSwipeableTableViewCellOffsetRight);
+    NSParameterAssert(offset >= AbacusSwipeableTableViewCellOffsetLeft);
+    NSParameterAssert(offset <= AbacusSwipeableTableViewCellOffsetRight);
     
     self.offset = offset;
     
@@ -303,7 +303,7 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
                completionHandler:completionHandler];
 }
 
-- (void)swipeTriggered:(ABCSwipeableTableViewCellDirection)direction {
+- (void)swipeTriggered:(AbacusSwipeableTableViewCellDirection)direction {
     if (self.triggerHandler) {
         self.triggerHandler(direction);
     }
@@ -330,11 +330,11 @@ CGFloat ABCSwipeableTableViewCellOffsetLeft = -1.f;
 }
 
 - (UIColor *)colorForOffset:(CGFloat)offset {
-    if (offset < ABCSwipeableTableViewCellNoOffset - threshold &&
+    if (offset < AbacusSwipeableTableViewCellNoOffset - threshold &&
         self.rightTriggerColor) {
         return self.rightTriggerColor;
     }
-    else if (offset > ABCSwipeableTableViewCellNoOffset + threshold &&
+    else if (offset > AbacusSwipeableTableViewCellNoOffset + threshold &&
              self.leftTriggerColor) {
         return self.leftTriggerColor;
     }

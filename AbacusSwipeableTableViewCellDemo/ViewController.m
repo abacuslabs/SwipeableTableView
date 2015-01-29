@@ -19,12 +19,12 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSString *identifier = NSStringFromClass([ABCSwipeableTableViewCell class]);
-    ABCSwipeableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    NSString *identifier = NSStringFromClass([AbacusSwipeableTableViewCell class]);
+    AbacusSwipeableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     
     if (!cell) {
-        cell = [[ABCSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                reuseIdentifier:identifier];
+        cell = [[AbacusSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                   reuseIdentifier:identifier];
     }
     
     cell.defaultColor = [UIColor darkGrayColor];
@@ -42,9 +42,7 @@
     cell.leftTriggerViewInsets = UIEdgeInsetsMake(36.f, 30.f, 0.f, 0.f);
     cell.rightTriggerViewInsets = UIEdgeInsetsMake(0.f, 30.f, 0.f, 30.f);
     
-    
-    
-    cell.triggerHandler = ^(ABCSwipeableTableViewCellDirection dir) {
+    cell.triggerHandler = ^(AbacusSwipeableTableViewCellDirection dir) {
         self.swipedCells = [self.swipedCells setByAddingObject:@(indexPath.row)];
         [self.tableView beginUpdates];
         [self.tableView endUpdates];
@@ -77,9 +75,9 @@
             continue;
         }
         if ([self.tableView indexPathForCell:c].section == ip.section) {
-            [(ABCSwipeableTableViewCell *)c setSwipeOffsetPercentage:offset
-                                                            animated:animated
-                                                   completionHandler:nil];
+            [(AbacusSwipeableTableViewCell *)c setSwipeOffsetPercentage:offset
+                                                               animated:animated
+                                                      completionHandler:nil];
         }
     }
     

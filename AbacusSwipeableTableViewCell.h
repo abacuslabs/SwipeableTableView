@@ -7,7 +7,7 @@
  */
 
 
-typedef NS_OPTIONS(NSInteger, ABCSwipeableTableViewCellDirection) {
+typedef NS_OPTIONS(NSInteger, AbacusSwipeableTableViewCellDirection) {
     ABCSwipeableTableViewCellDirectionNone = 0,
     ABCSwipeableTableViewCellDirectionLeft,
     ABCSwipeableTableViewCellDirectionRight
@@ -15,7 +15,7 @@ typedef NS_OPTIONS(NSInteger, ABCSwipeableTableViewCellDirection) {
 
 
 
-@protocol ABCSwipeableTableViewCellReusableView <NSObject>
+@protocol AbacusSwipeableTableViewCellReusableView <NSObject>
 
 @optional
 - (void)prepareForReuse;
@@ -24,27 +24,28 @@ typedef NS_OPTIONS(NSInteger, ABCSwipeableTableViewCellDirection) {
 
 
 
-extern CGFloat ABCSwipeableTableViewCellNoOffset;
-extern CGFloat ABCSwipeableTableViewCellOffsetRight;
-extern CGFloat ABCSwipeableTableViewCellOffsetLeft;
+extern CGFloat AbacusSwipeableTableViewCellNoOffset;
+extern CGFloat AbacusSwipeableTableViewCellOffsetRight;
+extern CGFloat AbacusSwipeableTableViewCellOffsetLeft;
 
 
 
-@interface ABCSwipeableTableViewCell : UITableViewCell
-@property (nonatomic) ABCSwipeableTableViewCellDirection swipeableDirections;
+@interface AbacusSwipeableTableViewCell : UITableViewCell
+@property (nonatomic) AbacusSwipeableTableViewCellDirection swipeableDirections;
 
-@property (nonatomic) UIView<ABCSwipeableTableViewCellReusableView> *leftTriggerView;
+@property (nonatomic) UIView<AbacusSwipeableTableViewCellReusableView> *leftTriggerView;
+@property (nonatomic) UIView<AbacusSwipeableTableViewCellReusableView> *rightTriggerView;
+
 @property (nonatomic) UIEdgeInsets leftTriggerViewInsets;
-@property (nonatomic) UIColor *leftTriggerColor;
-
-@property (nonatomic) UIView<ABCSwipeableTableViewCellReusableView> *rightTriggerView;
 @property (nonatomic) UIEdgeInsets rightTriggerViewInsets;
-@property (nonatomic) UIColor *rightTriggerColor;
 
 @property (nonatomic) UIColor *defaultColor;
 
-@property (nonatomic, copy) void(^triggerHandler)(ABCSwipeableTableViewCellDirection);
-@property (nonatomic, copy) void(^onSwipeHandler)(UITableViewCell *c, CGFloat offset, BOOL animated);
+@property (nonatomic) UIColor *leftTriggerColor;
+@property (nonatomic) UIColor *rightTriggerColor;
+
+@property (nonatomic, copy) void(^triggerHandler)(AbacusSwipeableTableViewCellDirection);
+@property (nonatomic, copy) void(^onSwipeHandler)(AbacusSwipeableTableViewCell *c, CGFloat offset, BOOL animated);
 
 - (void)setSwipeOffsetPercentage:(CGFloat)offset
                         animated:(BOOL)animated
