@@ -1,1 +1,1 @@
-ABCSwipeableTableViewCell README
+AbacusSwipeableTableViewCell README
