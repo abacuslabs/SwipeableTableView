@@ -78,11 +78,11 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     self.swipeableDirections = AbacusSwipeableTableViewCellDirectionNone;
     
     if ([self.leftTriggerView respondsToSelector:@selector(prepareForReuse)]) {
-        [self.leftTriggerView prepareForReuse];
+        [(UIView <AbacusSwipeableTableViewCellReusableView> *)self.leftTriggerView prepareForReuse];
     }
     
     if ([self.rightTriggerView respondsToSelector:@selector(prepareForReuse)]) {
-        [self.rightTriggerView prepareForReuse];
+        [(UIView <AbacusSwipeableTableViewCellReusableView> *)self.rightTriggerView prepareForReuse];
     }
     
     [self setSwipeOffsetPercentage:AbacusSwipeableTableViewCellNoOffset
@@ -431,5 +431,14 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
                             inSection:section]];
     }
 }
+
+- (void)setReusableLeftTriggerView:(UIView <AbacusSwipeableTableViewCellReusableView> *)reusableView {
+    self.leftTriggerView = reusableView;
+}
+
+- (void)setReusableRightTriggerView:(UIView <AbacusSwipeableTableViewCellReusableView> *)reusableView {
+    self.rightTriggerView = reusableView;
+}
+
 
 @end

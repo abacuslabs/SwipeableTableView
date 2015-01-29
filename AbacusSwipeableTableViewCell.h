@@ -33,8 +33,10 @@ extern CGFloat AbacusSwipeableTableViewCellOffsetLeft;
 @interface AbacusSwipeableTableViewCell : UITableViewCell
 @property (nonatomic) AbacusSwipeableTableViewCellDirection swipeableDirections;
 
-@property (nonatomic) UIView<AbacusSwipeableTableViewCellReusableView> *leftTriggerView;
-@property (nonatomic) UIView<AbacusSwipeableTableViewCellReusableView> *rightTriggerView;
+@property (nonatomic) UIView *leftTriggerView;
+- (void)setReusableLeftTriggerView:(UIView <AbacusSwipeableTableViewCellReusableView> *)reusableView;
+@property (nonatomic) UIView *rightTriggerView;
+- (void)setReusableRightTriggerView:(UIView <AbacusSwipeableTableViewCellReusableView> *)reusableView;
 
 @property (nonatomic) UIEdgeInsets leftTriggerViewInsets;
 @property (nonatomic) UIEdgeInsets rightTriggerViewInsets;
