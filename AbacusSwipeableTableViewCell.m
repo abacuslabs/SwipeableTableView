@@ -75,6 +75,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     self.leftTriggerColor = nil;
     self.rightTriggerColor = nil;
     self.defaultColor = nil;
+    self.swipeableDirections = AbacusSwipeableTableViewCellDirectionNone;
     
     if ([self.leftTriggerView respondsToSelector:@selector(prepareForReuse)]) {
         [self.leftTriggerView prepareForReuse];
