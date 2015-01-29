@@ -46,10 +46,6 @@ extern CGFloat ABCSwipeableTableViewCellOffsetLeft;
 @property (nonatomic, copy) void(^triggerHandler)(ABCSwipeableTableViewCellDirection);
 @property (nonatomic, copy) void(^onSwipeHandler)(UITableViewCell *c, CGFloat offset, BOOL animated);
 
-
-+ (CGFloat)heightForModel:(id)model
-              inTableView:(UITableView *)tableView;
-
 - (void)setSwipeOffsetPercentage:(CGFloat)offset
                         animated:(BOOL)animated
                completionHandler:(void(^)())completionHandler;

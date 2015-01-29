@@ -1,13 +1,5 @@
-//
-//  ViewController.m
-//  ABCSwipeableTableViewCellDemo
-//
-//  Created by Jan Sichermann on 11/26/14.
-//  Copyright (c) 2014 Abacus. All rights reserved.
-//
-
 #import "ViewController.h"
-#import "ABCSwipeableTableViewCell.h"
+#import "AbacusSwipeableTableViewCell.h"
 
 
 
@@ -98,8 +90,7 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([self.swipedCells containsObject:@(indexPath.row)]) {
         return 0.f;
     }
-    return [ABCSwipeableTableViewCell heightForModel:nil
-                                         inTableView:tableView];
+    return 128.f;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView {
