@@ -5,7 +5,7 @@
 
 @interface ViewController ()
 
-@property (nonatomic) NSSet *swipedCells;
+@property (atomic) NSArray *swipedCells;
 
 @end
 
@@ -15,7 +15,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.swipedCells = [NSSet set];
+    self.swipedCells = @[];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -33,6 +33,15 @@
     cell.leftTriggerColor = [UIColor redColor];
     cell.rightTriggerColor = [UIColor purpleColor];
     cell.swipeableDirections = AbacusSwipeableTableViewCellDirectionRight | AbacusSwipeableTableViewCellDirectionLeft;
+    if (indexPath.row == 0) {
+        cell.contentView.backgroundColor = [UIColor blueColor];
+    }
+    else if (indexPath.section == 0) {
+        cell.contentView.backgroundColor = [UIColor magentaColor];
+    }
+    else {
+        cell.contentView.backgroundColor = [UIColor yellowColor];
+    }
     
     UILabel *l = [[UILabel alloc] init];
     l.text = @"left";
@@ -41,18 +50,33 @@
     UILabel *r = [[UILabel alloc] init];
     r.text = @"right";
     cell.rightTriggerView = r;
-    cell.leftTriggerViewInsets = UIEdgeInsetsMake(36.f, 30.f, 0.f, 0.f);
+    cell.leftTriggerViewInsets = UIEdgeInsetsMake(0.f, 30.f, -10.f, 0.f);
     cell.rightTriggerViewInsets = UIEdgeInsetsMake(0.f, 30.f, 0.f, 30.f);
     
-    cell.triggerHandler = ^(AbacusSwipeableTableViewCellDirection dir) {
-        self.swipedCells = [self.swipedCells setByAddingObject:@(indexPath.row)];
-        [self.tableView beginUpdates];
-        [self.tableView endUpdates];
-    };
-    
     if (indexPath.row == 0) {
-        [cell addChildSection:0
+        [cell addChildSection:indexPath.section
                   inTableView:self.tableView];
+        cell.triggerHandler = ^(AbacusSwipeableTableViewCellDirection dir) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                NSInteger numRows = [self.tableView numberOfRowsInSection:indexPath.section];
+                NSMutableArray *indices = [NSMutableArray arrayWithCapacity:numRows];
+                for (NSInteger i = 0; i < numRows; i++) {
+                    [indices addObject:[NSIndexPath indexPathForRow:i inSection:indexPath.section]];
+                }
+                self.swipedCells = [self.swipedCells arrayByAddingObjectsFromArray:indices];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.tableView beginUpdates];
+                    [self.tableView endUpdates];
+                });
+            });
+        };
+    }
+    else {
+        cell.triggerHandler = ^(AbacusSwipeableTableViewCellDirection dir) {
+            self.swipedCells = [self.swipedCells arrayByAddingObject:indexPath];
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
+        };
     }
     
     return cell;
@@ -60,14 +84,21 @@
 
 - (CGFloat)tableView:(UITableView *)tableView
 heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([self.swipedCells containsObject:@(indexPath.row)]) {
-        return 0.f;
+    for (NSIndexPath *ip in self.swipedCells) {
+        if ([ip compare:indexPath] == NSOrderedSame) {
+            return 0.f;
+        }
     }
+    
+    if (indexPath.row == 0) {
+        return 64.f;
+    }
+    
     return 128.f;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(__unused UITableView *)tableView
@@ -75,10 +106,14 @@ heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 10;
 }
 
-- (void)tableView:(UITableView *)tableView
+- (void)tableView:(__unused UITableView *)tableView
 didSelectRowAtIndexPath:(__unused NSIndexPath *)indexPath {
-    self.swipedCells = [NSSet set];
-    [tableView reloadData];
+    [self reset];
+}
+
+- (void)reset {
+    self.swipedCells = [NSMutableArray array];
+    [self.tableView reloadData];
 }
 
 @end

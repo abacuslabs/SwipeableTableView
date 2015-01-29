@@ -7,7 +7,8 @@
 UIGestureRecognizerDelegate
 >
 @property (nonatomic) CGFloat offset;
-@property (nonatomic) NSMutableSet *childIndexPaths;
+
+@property (nonatomic) NSMutableArray *childIndexPaths;
 
 // unhappy about this
 @property (nonatomic, weak) UITableView *enclosingTableView;
@@ -40,6 +41,8 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
         return nil;
     }
     
+    // We clip the view, so that the height can be animated
+    // to create a "collapsing effect" when swiping a cell.
     self.clipsToBounds = YES;
     self.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -49,8 +52,6 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
                                             action:@selector(panSwipeView:)];
     pr.delegate = self;
     [self.contentView addGestureRecognizer:pr];
-    
-    self.contentView.backgroundColor = [UIColor greenColor];
     
     return self;
 }
@@ -270,7 +271,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
-            offset = dir == AbacusSwipeableTableViewCellDirectionLeft ? AbacusSwipeableTableViewCellOffsetLeft : AbacusSwipeableTableViewCellOffsetRight;
+            offset = dir == AbacusSwipeableTableViewCellDirectionLeft ? AbacusSwipeableTableViewCellOffsetRight : AbacusSwipeableTableViewCellOffsetLeft;
             __weak AbacusSwipeableTableViewCell *weakSelf = self;
             completionHandler = pr.state != UIGestureRecognizerStateEnded ? nil : ^{
                 AbacusSwipeableTableViewCell *strongSelf = weakSelf;
@@ -293,11 +294,13 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
                 continue;
             }
             
-            NSIndexPath *ip = [enclosingTableView indexPathForCell:cell];
-            if ([self.childIndexPaths containsObject:ip]) {
-                [(AbacusSwipeableTableViewCell *)cell setSwipeOffsetPercentage:offset
-                                                                      animated:animated
-                                                             completionHandler:nil];
+            NSIndexPath *cellIndexPath = [enclosingTableView indexPathForCell:cell];
+            for (NSIndexPath *ip in self.childIndexPaths) {
+                if ([ip compare:cellIndexPath] == NSOrderedSame) {
+                    [(AbacusSwipeableTableViewCell *)cell setSwipeOffsetPercentage:offset
+                                                                          animated:animated
+                                                                 completionHandler:nil];
+                }
             }
         }
     }
@@ -411,15 +414,16 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
 - (void)addChildSection:(NSInteger)section
             inTableView:(UITableView *)tableView {
     
+    NSInteger numberOfRows = [tableView numberOfRowsInSection:section];
+    
     if (!self.childIndexPaths) {
-        self.childIndexPaths = [NSMutableSet set];
+        self.childIndexPaths = [NSMutableArray arrayWithCapacity:numberOfRows];
     }
     
     if (self.enclosingTableView != tableView) {
         self.enclosingTableView = tableView;
     }
     
-    NSInteger numberOfRows = [tableView numberOfRowsInSection:section];
     for (NSInteger i = 0; i < numberOfRows; i++) {
         [self.childIndexPaths addObject:
          [NSIndexPath indexPathForRow:i
