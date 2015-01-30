@@ -255,7 +255,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     BOOL animated = YES;
     
     
-    AbacusSwipeableTableViewCellDirection dir = offset < AbacusSwipeableTableViewCellNoOffset ? AbacusSwipeableTableViewCellOffsetLeft : AbacusSwipeableTableViewCellOffsetRight;
+    AbacusSwipeableTableViewCellDirection dir = offset < AbacusSwipeableTableViewCellNoOffset ? AbacusSwipeableTableViewCellDirectionRight : AbacusSwipeableTableViewCellDirectionLeft;
     
     if (!(self.swipeableDirections & dir)) {
         offset = AbacusSwipeableTableViewCellNoOffset;
