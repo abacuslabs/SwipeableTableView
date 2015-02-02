@@ -48,12 +48,10 @@ extern CGFloat AbacusSwipeableTableViewCellOffsetLeft;
 
 @property (nonatomic, copy) void(^triggerHandler)(AbacusSwipeableTableViewCellDirection);
 @property (nonatomic, copy) void(^onSwipeHandler)(AbacusSwipeableTableViewCell *c, CGFloat offset, BOOL animated);
+@property (nonatomic, copy) NSArray *(^childTableViewCells)();
 
 - (void)setSwipeOffsetPercentage:(CGFloat)offset
                         animated:(BOOL)animated
                completionHandler:(void(^)())completionHandler;
-
-- (void)addChildSection:(NSInteger)section
-            inTableView:(UITableView *)tableView;
 
 @end

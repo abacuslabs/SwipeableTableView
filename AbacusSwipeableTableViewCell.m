@@ -8,11 +8,6 @@ UIGestureRecognizerDelegate
 >
 @property (nonatomic) CGFloat offset;
 
-@property (nonatomic) NSMutableArray *childIndexPaths;
-
-// unhappy about this
-@property (nonatomic, weak) UITableView *enclosingTableView;
-
 @end
 
 
@@ -64,9 +59,6 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
 
 - (void)prepareForReuse {
     [super prepareForReuse];
-    
-    self.enclosingTableView = nil;
-    self.childIndexPaths = nil;
     
     self.triggerHandler = nil;
     self.onSwipeHandler = nil;
@@ -288,21 +280,18 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
                           animated:animated
                  completionHandler:completionHandler];
     
-    UITableView *enclosingTableView = self.enclosingTableView;
-    if (self.childIndexPaths.count > 0 && enclosingTableView) {
-        for (UITableViewCell *cell in [self.enclosingTableView visibleCells]) {
+    NSArray *(^childTableViewCellsHandler)() = self.childTableViewCells;
+    
+    if (childTableViewCellsHandler) {
+        for (UITableViewCell *cell in childTableViewCellsHandler()) {
             if (![cell isKindOfClass:[AbacusSwipeableTableViewCell class]]) {
                 continue;
             }
             
-            NSIndexPath *cellIndexPath = [enclosingTableView indexPathForCell:cell];
-            for (NSIndexPath *ip in self.childIndexPaths) {
-                if ([ip compare:cellIndexPath] == NSOrderedSame) {
-                    [(AbacusSwipeableTableViewCell *)cell setSwipeOffsetPercentage:offset
-                                                                          animated:animated
-                                                                 completionHandler:nil];
-                }
-            }
+            
+            [(AbacusSwipeableTableViewCell *)cell setSwipeOffsetPercentage:offset
+                                                                  animated:animated
+                                                         completionHandler:nil];
         }
     }
     
@@ -410,26 +399,6 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
 - (void)setRightTriggerColor:(UIColor *)rightTriggerColor {
     _rightTriggerColor = rightTriggerColor;
     [self setNeedsLayout];
-}
-
-- (void)addChildSection:(NSInteger)section
-            inTableView:(UITableView *)tableView {
-    
-    NSInteger numberOfRows = [tableView numberOfRowsInSection:section];
-    
-    if (!self.childIndexPaths) {
-        self.childIndexPaths = [NSMutableArray arrayWithCapacity:numberOfRows];
-    }
-    
-    if (self.enclosingTableView != tableView) {
-        self.enclosingTableView = tableView;
-    }
-    
-    for (NSInteger i = 0; i < numberOfRows; i++) {
-        [self.childIndexPaths addObject:
-         [NSIndexPath indexPathForRow:i
-                            inSection:section]];
-    }
 }
 
 - (void)setReusableLeftTriggerView:(UIView <AbacusSwipeableTableViewCellReusableView> *)reusableView {
