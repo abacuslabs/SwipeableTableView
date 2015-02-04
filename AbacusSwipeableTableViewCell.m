@@ -247,7 +247,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     BOOL animated = YES;
     
     
-    AbacusSwipeableTableViewCellDirection dir = offset < AbacusSwipeableTableViewCellNoOffset ? AbacusSwipeableTableViewCellDirectionRight : AbacusSwipeableTableViewCellDirectionLeft;
+    AbacusSwipeableTableViewCellDirection dir = offset < AbacusSwipeableTableViewCellNoOffset ? AbacusSwipeableTableViewCellDirectionLeft : AbacusSwipeableTableViewCellDirectionRight;
     
     if (!(self.swipeableDirections & dir)) {
         offset = AbacusSwipeableTableViewCellNoOffset;
@@ -264,7 +264,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     }
     else if (pr.state == UIGestureRecognizerStateEnded) {
         if (offset > threshold || offset < -threshold) {
-            offset = dir == AbacusSwipeableTableViewCellDirectionLeft ? AbacusSwipeableTableViewCellOffsetRight : AbacusSwipeableTableViewCellOffsetLeft;
+            offset = dir == AbacusSwipeableTableViewCellDirectionLeft ? AbacusSwipeableTableViewCellOffsetLeft : AbacusSwipeableTableViewCellOffsetRight;
             __weak AbacusSwipeableTableViewCell *weakSelf = self;
             completionHandler = pr.state != UIGestureRecognizerStateEnded ? nil : ^{
                 AbacusSwipeableTableViewCell *strongSelf = weakSelf;
