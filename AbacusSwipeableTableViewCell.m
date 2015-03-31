@@ -62,6 +62,7 @@ CGFloat AbacusSwipeableTableViewCellOffsetLeft = -1.f;
     
     self.triggerHandler = nil;
     self.onSwipeHandler = nil;
+    self.childTableViewCells = nil;
     self.leftTriggerViewInsets = UIEdgeInsetsZero;
     self.rightTriggerViewInsets = UIEdgeInsetsZero;
     self.leftTriggerColor = nil;
