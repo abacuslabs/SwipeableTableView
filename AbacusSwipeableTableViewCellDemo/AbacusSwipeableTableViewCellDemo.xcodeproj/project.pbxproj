@@ -43,7 +43,7 @@
 			children = (
 				3D6687BB1A79B0AC00F381E5 /* AbacusSwipeableTableViewCell.h */,
 				3D6687BC1A79B0AC00F381E5 /* AbacusSwipeableTableViewCell.m */,
-				3DFED7C61A263EEB005DE3BC /* ABCSwipeableTableViewCellDemo */,
+				3DFED7C61A263EEB005DE3BC /* AbacusSwipeableTableViewCellDemo */,
 				3DFED7C51A263EEB005DE3BC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,7 +56,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3DFED7C61A263EEB005DE3BC /* ABCSwipeableTableViewCellDemo */ = {
+		3DFED7C61A263EEB005DE3BC /* AbacusSwipeableTableViewCellDemo */ = {
 			isa = PBXGroup;
 			children = (
 				3D3BEFBC1A263FF8000885DD /* Info.plist */,
@@ -67,6 +67,7 @@
 				3D3BEFB11A263F89000885DD /* ViewController.h */,
 				3D3BEFB21A263F89000885DD /* ViewController.m */,
 			);
+			name = AbacusSwipeableTableViewCellDemo;
 			path = ABCSwipeableTableViewCellDemo;
 			sourceTree = "<group>";
 		};
