@@ -59,10 +59,8 @@
                 [indices addObject:[NSIndexPath indexPathForRow:i inSection:indexPath.section]];
             }
             self.swipedCells = [self.swipedCells arrayByAddingObjectsFromArray:indices];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.tableView beginUpdates];
-                [self.tableView endUpdates];
-            });
+            [self.tableView beginUpdates];
+            [self.tableView endUpdates];
         };
         
         __weak ViewController *weakSelf = self;
