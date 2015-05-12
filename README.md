@@ -63,8 +63,8 @@ To turn an AbacusSwipeableTableViewCell into a "header" type cell, set its child
 
 ```
 cell.childTableViewCells = ^NSArray*() {
-    NSArray *childrenCell = ...;
-    return childrenCell;
+    NSArray *childCells = ...;
+    return childCells;
 };
 ```
 
