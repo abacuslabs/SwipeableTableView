@@ -4,13 +4,13 @@
 
 Init a cell (or subclass) as usual
 ```
-    NSString *identifier = NSStringFromClass([AbacusSwipeableTableViewCell class]);
-    AbacusSwipeableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+NSString *identifier = NSStringFromClass([AbacusSwipeableTableViewCell class]);
+AbacusSwipeableTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
 
-    if (!cell) {
-        cell = [[AbacusSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                   reuseIdentifier:identifier];
-    }
+if (!cell) {
+    cell = [[AbacusSwipeableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                               reuseIdentifier:identifier];
+}
 ```
 
 or register it as you usually would
