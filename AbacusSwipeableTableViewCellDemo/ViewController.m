@@ -51,13 +51,17 @@
     cell.leftTriggerViewInsets = UIEdgeInsetsMake(0.f, 30.f, -10.f, 0.f);
     cell.rightTriggerViewInsets = UIEdgeInsetsMake(0.f, 30.f, 0.f, 30.f);
     
-    if (indexPath.row == 0) {
+    if (indexPath.row == 0) { // For simplicity's sake, every section's first row is treated as a "header"
         cell.triggerHandler = ^(AbacusSwipeableTableViewCellDirection dir) {
             NSInteger numRows = [self.tableView numberOfRowsInSection:indexPath.section];
             NSMutableArray *indices = [NSMutableArray arrayWithCapacity:numRows];
             for (NSInteger i = 0; i < numRows; i++) {
                 [indices addObject:[NSIndexPath indexPathForRow:i inSection:indexPath.section]];
             }
+            
+            // For simplicity's sake, all we do here is actually collapse the cells,
+            // however this would be the place to take action on all the items represented
+            // by this section
             self.swipedCells = [self.swipedCells arrayByAddingObjectsFromArray:indices];
             [self.tableView beginUpdates];
             [self.tableView endUpdates];
@@ -73,12 +77,15 @@
                     [cells addObject:c];
                 }
             }
-            return cells.copy;;
+            return cells.copy;
         };
     }
-    else {
+    else { // For simplicity's sake, every section other than the first, is treated as a "child"
         cell.triggerHandler = ^(AbacusSwipeableTableViewCellDirection dir) {
             self.swipedCells = [self.swipedCells arrayByAddingObject:indexPath];
+            // Calling beginUpdates and endUpdates in succession
+            // triggers the tableView to call heightForRowAtIndexPath: on its delegate
+            // and in turn animate the collapsing of cells whose height is now 0
             [self.tableView beginUpdates];
             [self.tableView endUpdates];
         };
