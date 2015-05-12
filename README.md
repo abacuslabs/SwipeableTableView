@@ -1,3 +1,5 @@
+# Usage
+
 To make an AbacusSwipeableTableViewCell swipeable, set its directions
 ```
 cell.swipeableDirections = AbacusSwipeableTableViewCellDirectionRight | AbacusSwipeableTableViewCellDirectionLeft;
