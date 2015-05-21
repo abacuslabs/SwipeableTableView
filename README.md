@@ -68,3 +68,6 @@ cell.childTableViewCells = ^NSArray*() {
 };
 ```
 
+## Context
+
+For more context: http://blog.abacus.com/swipeable-uitableview-headers-an-open-source-library
